@@ -101,7 +101,7 @@ h1 {
 
 /* Werkzeugleiste (unauffällig) */
 .werkzeuge {
-  position: absolute; right: calc(var(--rand) + 10px); bottom: calc(var(--rand) + 8px);
+  position: absolute; left: calc(var(--rand) + 10px); bottom: calc(var(--rand) + 8px);
   display: flex; gap: 6px; align-items: center; z-index: 7;
 }
 .werkzeug {

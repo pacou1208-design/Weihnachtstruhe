@@ -1,6 +1,6 @@
 // Service Worker: hält die Seite offline verfügbar.
 // Bei Änderungen an der Seite diese Versionsnummer erhöhen.
-const VERSION = "truhe-v4";
+const VERSION = "truhe-v5";
 const DATEIEN = [
   "./", "index.html", "styles.css", "app.js", "szene.js", "sha256.js", "icon.svg",
   "fonts/comicneue-400.woff2", "fonts/comicneue-700.woff2", "fonts/chewy.woff2", "fonts/great-vibes.woff2",
