@@ -1,0 +1,9 @@
+{
+  "name": "weihnachtstruhe",
+  "private": true,
+  "type": "module",
+  "description": "Klassen-Adventskalender: Das Rätsel der Weihnachtstruhe",
+  "dependencies": {
+    "@netlify/blobs": "^11.1.9"
+  }
+}

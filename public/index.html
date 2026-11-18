@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#7F1D1D">
+  <title>Das Rätsel der Weihnachtstruhe</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="preload" href="fonts/chewy.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/comicneue-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <canvas id="schnee" aria-hidden="true"></canvas>
+
+  <div class="rahmen">
+    <svg class="stechpalme links" viewBox="0 0 200 140" aria-hidden="true"><use href="#ilex"/></svg>
+    <svg class="stechpalme rechts" viewBox="0 0 200 140" aria-hidden="true"><use href="#ilex"/></svg>
+
+    <!-- ===== Hauptansicht ===== -->
+    <main id="hauptansicht" class="buehne">
+      <header class="kopf">
+        <h1>Das Rätsel der Weihnachtstruhe</h1>
+        <p class="untertitel">17 Kugeln · 17 Ziffern · 1 Truhe</p>
+      </header>
+
+      <section class="seite seite-links">
+        <div class="fortschritt" aria-live="polite">
+          <div class="zaehler"><span id="anzahl">0</span><span class="von">von 17</span></div>
+          <p id="fortschrittText">Schon 0 von 17 Ziffern gefunden</p>
+          <div class="sternleiste" id="sternleiste" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <section class="baum-bereich">
+        <svg id="baum" viewBox="0 0 1000 1080" role="img" aria-label="Weihnachtsbaum mit 17 Kugeln, darunter die Truhe und die goldene Schatzkugel"></svg>
+      </section>
+
+      <section class="seite seite-rechts">
+        <button class="knopf knopf-gruen" id="briefKnopf">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18v12H3z M3 6l9 7 9-7" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          Brief des Hüters lesen
+        </button>
+        <button class="knopf knopf-gold" id="finaleKnopf">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 11V8a5 5 0 0 1 10 0v3M5 11h14v10H5z M12 15v3" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Truhe öffnen
+        </button>
+      </section>
+    </main>
+
+    <!-- Werkzeugleiste -->
+    <nav class="werkzeuge" aria-label="Einstellungen">
+      <span id="verbindung" class="verbindung" title="Verbindungsstatus"></span>
+      <button class="werkzeug" id="schneeKnopf" title="Schnee an/aus" aria-pressed="true">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v20M4 7l16 10M20 7L4 17M9 3l3 2 3-2M9 21l3-2 3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="werkzeug" id="tonKnopf" title="Ton an/aus" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 17h12l-2-3v-4a4 4 0 0 0-8 0v4zM10 20a2 2 0 0 0 4 0" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path class="durchgestrichen" d="M4 4l16 16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="werkzeug" id="vollbildKnopf" title="Vollbild">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="werkzeug zahnrad" id="adminKnopf" title="Eingabe für die Lehrkraft">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1L7 17M17 7l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ===== Brief des Hüters ===== -->
+  <div class="ebene" id="briefEbene" hidden>
+    <div class="schriftrolle" role="dialog" aria-modal="true" aria-labelledby="briefTitel">
+      <div class="rolle oben"></div>
+      <div class="pergament">
+        <div class="pergament-innen">
+          <h2 id="briefTitel" class="anrede">Liebe Klasse,</h2>
+          <p>diese Truhe ist für euch. Was darin liegt, verrate ich nicht. Nur so viel: Es wird euch gefallen.</p>
+          <p>Öffnen könnt ihr sie aber nur mit einem Code aus 17 Ziffern. Die Ziffern habe ich in der ganzen Schule versteckt und meinen geheimen Helfern anvertraut. Sie geben sie nur heraus, wenn ihr ihre Aufgaben erfüllt und ihre Rätsel löst.</p>
+          <p>Jeden Morgen öffnet einer von euch einen Umschlag. Darin steht, was ihr tun müsst und wo ihr den nächsten Hinweis findet.</p>
+          <p>Habt ihr alle 17 Ziffern gefunden, bevor die Weihnachtsferien beginnen, öffnet sich die Truhe.</p>
+          <p class="glueck">Viel Glück!</p>
+          <p class="unterschrift">Der Hüter der Truhe</p>
+          <div class="siegel" aria-hidden="true">H</div>
+        </div>
+      </div>
+      <div class="rolle unten"></div>
+      <button class="schliessen" data-schliessen aria-label="Brief schließen">×</button>
+    </div>
+  </div>
+
+  <!-- ===== Finale ===== -->
+  <div class="ebene finale" id="finaleEbene" hidden>
+    <div class="finale-karte" role="dialog" aria-modal="true" aria-labelledby="finaleTitel">
+      <button class="schliessen" data-schliessen aria-label="Zurück zum Baum">×</button>
+      <h2 id="finaleTitel">Der Code für die Truhe</h2>
+      <p class="hinweis">Lest die Ziffern von Kugel 1 bis Kugel 17 ab und tippt sie ein.</p>
+      <div class="codefelder" id="codefelder"></div>
+      <div class="finale-unten">
+        <div class="finale-truhe">
+          <svg id="finaleTruhe" viewBox="0 0 300 260" aria-hidden="true"></svg>
+          <p class="meldung" id="meldung" role="status" aria-live="assertive"></p>
+        </div>
+        <div class="tastenfeld" id="tastenfeld">
+          <button data-ziffer="7">7</button><button data-ziffer="8">8</button><button data-ziffer="9">9</button>
+          <button data-ziffer="4">4</button><button data-ziffer="5">5</button><button data-ziffer="6">6</button>
+          <button data-ziffer="1">1</button><button data-ziffer="2">2</button><button data-ziffer="3">3</button>
+          <button data-taste="leeren" class="taste-klein">Alles<br>löschen</button>
+          <button data-ziffer="0">0</button>
+          <button data-taste="zurueck" class="taste-klein" aria-label="Letzte Ziffer löschen">⌫</button>
+          <button data-taste="pruefen" class="taste-pruefen">Truhe öffnen!</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== Erfolg ===== -->
+  <div class="ebene erfolg" id="erfolgEbene" hidden>
+    <div class="strahlen" aria-hidden="true"></div>
+    <canvas id="konfetti" aria-hidden="true"></canvas>
+    <div class="erfolg-inhalt" role="dialog" aria-modal="true" aria-labelledby="erfolgText">
+      <svg id="erfolgTruhe" viewBox="0 0 300 260" aria-hidden="true"></svg>
+      <h2 id="erfolgText">Die Truhe ist freigegeben!<br><span>Ihr dürft sie jetzt öffnen.</span></h2>
+      <button class="knopf knopf-gruen klein" data-schliessen>Zurück zum Baum</button>
+    </div>
+  </div>
+
+  <!-- ===== Lehrkraft ===== -->
+  <div class="ebene" id="adminEbene" hidden>
+    <div class="admin-karte" role="dialog" aria-modal="true" aria-labelledby="adminTitel">
+      <button class="schliessen" data-schliessen aria-label="Schließen">×</button>
+      <h2 id="adminTitel">Eingabe für die Lehrkraft</h2>
+
+      <form id="pinForm" class="pin-form" autocomplete="off">
+        <label for="pinFeld">Bitte PIN eingeben</label>
+        <input id="pinFeld" type="password" inputmode="numeric" autocomplete="off" required>
+        <button class="knopf knopf-gruen klein" type="submit">Weiter</button>
+        <p class="admin-meldung" id="pinMeldung"></p>
+      </form>
+
+      <form id="pinSetupForm" class="pin-form" autocomplete="off" hidden>
+        <p class="admin-text">Willkommen! Es gibt noch keine PIN. Legen Sie jetzt Ihre PIN fest (4 bis 12 Ziffern).
+          Mit ihr kommen Sie künftig auf jedem Gerät in diese Eingabe.</p>
+        <label for="setupPin1">Neue PIN</label>
+        <input id="setupPin1" type="password" inputmode="numeric" maxlength="12" autocomplete="new-password" required>
+        <label for="setupPin2">PIN wiederholen</label>
+        <input id="setupPin2" type="password" inputmode="numeric" maxlength="12" autocomplete="new-password" required>
+        <button class="knopf knopf-gold klein" type="submit">PIN festlegen</button>
+        <p class="admin-meldung" id="setupMeldung"></p>
+      </form>
+
+      <div id="adminInhalt" hidden>
+        <p class="admin-text">Ziffer eintragen, ändern oder Feld leeren. Danach <b>Speichern</b> drücken.</p>
+        <div class="admin-raster" id="adminRaster"></div>
+        <p class="admin-pruefung" id="adminPruefung"></p>
+        <div class="admin-knoepfe">
+          <button class="knopf knopf-gold klein" id="speichernKnopf">Speichern</button>
+          <p class="admin-meldung" id="adminMeldung"></p>
+        </div>
+
+        <details class="admin-mehr">
+          <summary>Für das nächste Jahr</summary>
+          <div class="admin-block">
+            <h3>Alles zurücksetzen</h3>
+            <p>Löscht alle eingetragenen Ziffern. Der Code bleibt gleich.</p>
+            <button class="knopf knopf-rot klein" id="resetKnopf">Alles zurücksetzen …</button>
+          </div>
+          <div class="admin-block">
+            <h3>Neuen Code festlegen</h3>
+            <p>Gespeichert wird nur eine Prüfsumme (Hash), nicht der Code selbst. Aktuelle Prüfsumme: <code id="hashAnzeige"></code></p>
+            <label>Neuer Code (17 Ziffern) <input id="neuCode1" inputmode="numeric" maxlength="17" autocomplete="off"></label>
+            <label>Code wiederholen <input id="neuCode2" inputmode="numeric" maxlength="17" autocomplete="off"></label>
+            <button class="knopf knopf-gruen klein" id="codeKnopf">Neuen Code speichern</button>
+            <p class="admin-meldung" id="codeMeldung"></p>
+          </div>
+          <div class="admin-block">
+            <h3>PIN ändern</h3>
+            <p>Die neue PIN gilt sofort auf allen Geräten.</p>
+            <label>Neue PIN (4 bis 12 Ziffern) <input id="neuPin1" type="password" inputmode="numeric" maxlength="12" autocomplete="new-password"></label>
+            <label>PIN wiederholen <input id="neuPin2" type="password" inputmode="numeric" maxlength="12" autocomplete="new-password"></label>
+            <button class="knopf knopf-gruen klein" id="pinAendernKnopf">Neue PIN speichern</button>
+            <p class="admin-meldung" id="pinAendernMeldung"></p>
+          </div>
+        </details>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sicherheitsabfrage -->
+  <div class="ebene" id="frageEbene" hidden>
+    <div class="frage-karte" role="alertdialog" aria-modal="true" aria-labelledby="frageText">
+      <p id="frageText"></p>
+      <div class="frage-knoepfe">
+        <button class="knopf knopf-gruen klein" id="frageNein">Abbrechen</button>
+        <button class="knopf knopf-rot klein" id="frageJa">Ja, löschen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stechpalmen-Vorlage -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <g id="ilex">
+        <path d="M100 70 C70 40 40 45 8 30 C22 44 14 52 26 58 C14 66 26 74 18 84 C46 76 70 86 100 70Z" fill="#256B42" stroke="#1E5631" stroke-width="3"/>
+        <path d="M100 70 C80 40 86 18 76 2 C70 18 60 14 58 28 C48 22 44 34 36 30 C54 52 70 70 100 70Z" fill="#2E7D4F" stroke="#1E5631" stroke-width="3"/>
+        <path d="M100 70 C130 50 150 70 190 62 C176 74 184 82 172 88 C182 98 168 102 172 114 C146 98 124 96 100 70Z" fill="#2E7D4F" stroke="#1E5631" stroke-width="3"/>
+        <path d="M30 50 L100 70 M70 18 L100 70 M175 80 L100 70" stroke="#1E5631" stroke-width="2" fill="none"/>
+        <circle cx="96" cy="74" r="12" fill="#C62828" stroke="#7F1D1D" stroke-width="2"/>
+        <circle cx="114" cy="80" r="11" fill="#C62828" stroke="#7F1D1D" stroke-width="2"/>
+        <circle cx="102" cy="92" r="11" fill="#C62828" stroke="#7F1D1D" stroke-width="2"/>
+        <circle cx="92" cy="70" r="3.5" fill="#fff" opacity=".7"/>
+        <circle cx="110" cy="76" r="3" fill="#fff" opacity=".7"/>
+        <circle cx="98" cy="88" r="3" fill="#fff" opacity=".7"/>
+      </g>
+    </defs>
+  </svg>
+
+  <script src="sha256.js"></script>
+  <script src="szene.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
